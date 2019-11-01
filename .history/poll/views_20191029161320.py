@@ -1,0 +1,40 @@
+from django.shortcuts import render
+from rest_framework.viewsets import ModelViewSet
+from .models import *
+from .serializers import *
+from rest_framework.decorators import api_view
+from django.db.models import Count
+
+@api_view(['GET'])
+def get_current_user(request):
+    serializer = GetFullUserSerializer(request.user)
+    return Response(serializer.data)
+
+class QuestionViewSet(ModelViewSet):
+    queryset = Question.objects.all()
+    serializer_class = QuestionSerializer
+
+    
+
+class ChoiceViewSet(ModelViewSet):
+    queryset = Choice.objects.all()
+    serializer_class = ChoiceSerializer
+
+    def get_queryset(self):
+        return Choice.objects.annotate(
+        count_votes=Count('votes'),
+    )
+
+
+class VoteViewSet(ModelViewSet):
+    queryset = Vote.objects.all()
+    serializer_class = VoteSerializer
+    
+    # @api_view(['GET'])
+    # def get_queryset(self):
+    #     return Vote.objects.annotated(
+    #         count_vote=Count('id')
+    #     )
+
+   
+
